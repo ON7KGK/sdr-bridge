@@ -1,0 +1,23 @@
+# SDR Bridge — exemple de configuration
+# Copier en bridge.yaml et adapter aux valeurs reelles.
+
+# Serveur rigctld (cote WSJT-X). Defaut Hamlib = 4532.
+rigctld:
+  host: 127.0.0.1
+  port: 4532
+
+# Backend SDR Console : choisir 'tcp' ou 'serial' selon la config
+# de SDR Console (Tools -> External Radio).
+sdr_console:
+  mode: tcp                # 'tcp' ou 'serial'
+  # Pour mode = 'tcp' :
+  host: 127.0.0.1
+  port: 7300               # port TCP que SDR Console expose pour le CAT
+
+  # Pour mode = 'serial' (commenter les 2 lignes au-dessus) :
+  # mode: serial
+  # port: COM5
+  # baud: 9600
+
+# Niveau de log : DEBUG / INFO / WARNING / ERROR
+log_level: INFO
