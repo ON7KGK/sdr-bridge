@@ -53,42 +53,77 @@ TS2000_TO_RIGCTLD = {
 }
 
 
-# Reponse \dump_state minimale pour satisfaire WSJT-X.
-# Documente le rig comme un TS-2000 generique avec freq 1.8 a 470 MHz,
-# modes USB/LSB/CW/FM/AM/RTTY, 1 VFO, capacite split.
+# Reponse \dump_state — format strict attendu par Hamlib 4.5+ NET-rigctl.
+#
+# Structure exacte (1 element par ligne, sauf preamp/atten qui sont 1 ligne) :
+#  - rigctl protocol version (0 = legacy + extensions key=value optionnelles)
+#  - rig model
+#  - ITU region
+#  - rx_range_list : "start_hz end_hz vfo_modes low_pwr high_pwr vfo ant"
+#    terminee par "0 0 0 0 0 0 0" (UN SEUL terminator)
+#  - tx_range_list : meme format, UN SEUL terminator
+#  - tuning_steps : "mode_mask step_hz", terminees par "0 0"
+#  - filter_list : "mode_mask width_hz", terminees par "0 0"
+#  - max_rit, max_xit, max_ifshift (3 lignes int)
+#  - announces (1 ligne)
+#  - preamp : UNE ligne, valeurs espace-separees + 0 final
+#  - attenuator : UNE ligne idem
+#  - has_get_func, has_set_func, has_get_level, has_set_level,
+#    has_get_parm, has_set_parm (6 hex)
+#  - extensions key=value (vfo_ops, ptt_type, etc.) requises par
+#    Hamlib >=4.5 sinon NET-rigctl deconnecte
+#  - terminer par "done\n" pour signaler fin du dump_state
 DUMP_STATE = """\
 0
-2
+1
 2
 150000.000000 1500000000.000000 0x1ff -1 -1 0x10000003 0x3
 0 0 0 0 0 0 0
-0 0 0 0 0 0 0
-1800000.000000 2000000000.000000 0x1ff 1000 100000 0x10000003 0x3
-0 0 0 0 0 0 0
+1800000.000000 2000000000.000000 0x1ff 5000 100000 0x10000003 0x3
 0 0 0 0 0 0 0
 0x1ff 1
-0x1ff 0
+0x1ff 10
+0x1ff 100
+0x1ff 1000
+0x1ff 10000
 0 0
-0x1e 2400
-0x2 500
-0x1 8000
-0x1 2400
-0x20 15000
+0x82 500
+0x82 1700
+0x82 2400
+0x82 2800
+0x21 6000
 0x20 8000
-0x40 230000
+0x4 12000
+0xc8 8000
+0xc8 6000
+0xc8 2400
+0xc8 1700
+0xc8 500
 0 0
 9990
 9990
 10000
 0
-10
-10 20 30
-0x3effffff
-0x3effffff
-0x7fffffff
-0x7fffffff
-0x7fffffff
-0x7fffffff
+0
+0
+0x0
+0x0
+0x4000000
+0x4000000
+0x0
+0x0
+vfo_ops=0x4000
+ptt_type=0x1
+targetable_vfo=0x0
+has_set_vfo=1
+has_get_vfo=1
+has_set_freq=1
+has_get_freq=1
+has_set_mode=1
+has_get_mode=1
+has_power2mW=0
+timeout=2000
+done
 """
 
 

@@ -52,13 +52,16 @@ class RigctldServer:
                 raw = line.decode("ascii", errors="replace").strip()
                 if not raw:
                     continue
-                log.debug(f"<< {raw}")
+                log.info(f"<< {raw}")
                 try:
                     response = await self._dispatch(raw)
                 except Exception as e:
                     log.exception(f"Erreur dispatch '{raw}' : {e}")
                     response = RPRT_ERR
-                log.debug(f">> {response.rstrip()}")
+                # Resume court : 1ere ligne + nombre total de lignes
+                first = response.split("\n", 1)[0]
+                nlines = response.count("\n")
+                log.info(f">> {first!r} ({nlines} lignes)")
                 writer.write(response.encode("ascii"))
                 await writer.drain()
         except (ConnectionResetError, BrokenPipeError):
